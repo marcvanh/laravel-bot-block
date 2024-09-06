@@ -2,9 +2,6 @@
 
 namespace Marcvanh\LaravelBotBlock\Middleware;
 
-// ideas:
-//   - whitelist if user logged in
-
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
@@ -21,11 +18,11 @@ class BotBlockMiddleware
         
         // get client IP with cloudflare (or other proxy) support
         $clientIp = $_SERVER["HTTP_CF_CONNECTING_IP"] ?? $_SERVER["HTTP_X_FORWARDED_FOR"] ?? $_SERVER['REMOTE_ADDR'];
-
+        
         // skip local & invalid IP addresses
-        // if (empty($clientIp) || !$this->isValidPublicIp($clientIp)) {
-        //     return $next($request);
-        // }
+        if (!$this->isValidPublicIp($clientIp)) {
+            return $next($request);
+        }
         
         // skip if whitelist match
         if ($this->isMatch($request->decodedPath(), config('laravel-bot-block.whitelist.uri', []))) {
@@ -34,12 +31,12 @@ class BotBlockMiddleware
         if ($this->isMatch($clientIp, config('laravel-bot-block.whitelist.ip', []))) {
             return $next($request);
         }
-
+        
         // check if this IP is currently blocked. if so, deny access to site
-        if (RateLimiter::tooManyAttempts(config('laravel-bot-block.cache_key') . ":{$clientIp}", 1)) {
+        if (RateLimiter::tooManyAttempts(config('laravel-bot-block.cache_key').":{$clientIp}", 1)) {
             abort(config('laravel-bot-block.response_code', 444));
         }
-
+        
         //////////////////
         // BOT CHECKS
         //////////////////
@@ -99,7 +96,7 @@ class BotBlockMiddleware
             $seconds = config('laravel-bot-block.block_seconds');
             
             // block the ip
-            RateLimiter::hit(config('laravel-bot-block.cache_key') . ":{$ip}", $seconds);
+            RateLimiter::hit(config('laravel-bot-block.cache_key').":{$ip}", $seconds);
             
             // log this
             try {
@@ -117,9 +114,7 @@ class BotBlockMiddleware
     private function isValidPublicIp ($ip): bool
     {
         // Check if the IP is valid and not in private or reserved ranges
-        return filter_var($ip, 
-            FILTER_VALIDATE_IP, 
-            FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE,
-        ) !== false;
+        return filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE)
+            !== false;
     }
 }

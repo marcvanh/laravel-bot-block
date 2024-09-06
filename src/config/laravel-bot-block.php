@@ -1,7 +1,7 @@
 <?php
 
 return [
-
+    
     // enable or disable this package
     'enable' => env('APP_ENV') === 'production',
     
@@ -51,5 +51,5 @@ return [
     // other settings
     'block_seconds' => 10 * 60,
     'cache_key' => 'ls-blocked-ip',
-    
+
 ];

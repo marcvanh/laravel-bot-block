@@ -1,7 +1,13 @@
 {
     "name": "marcvanh/laravel-bot-block",
     "description": "A Laravel security package with custom middleware",
-    "version": "1.0.1",
+    "version": "1.0.2",
+    "authors": [
+        {
+            "name": "Marc Van Houwelingen",
+            "homepage": "https://github.com/marcvanh"
+        }
+    ],
     "type": "library",
     "license": "MIT",
     "autoload": {
