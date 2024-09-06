@@ -1,0 +1,23 @@
+{
+    "name": "marcvanh/laravel-bot-block",
+    "description": "A Laravel security package with custom middleware",
+    "version": "1.0.0",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Marcvanh\\LaravelBotBlock\\": "src/"
+        }
+    },
+    "require": {
+        "php": ">=8.0",
+        "illuminate/support": "^9.0|^10.0"
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Marcvanh\\LaravelBotBlock\\LaravelBotBlockServiceProvider"
+            ]
+        }
+    }
+}
