@@ -1,7 +1,7 @@
 {
     "name": "marcvanh/laravel-bot-block",
     "description": "A Laravel security package with custom middleware",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "type": "library",
     "license": "MIT",
     "autoload": {
@@ -10,8 +10,7 @@
         }
     },
     "require": {
-        "php": ">=8.0",
-        "illuminate/support": "^9.0|^10.0"
+        "php": ">=8.0"
     },
     "extra": {
         "laravel": {
