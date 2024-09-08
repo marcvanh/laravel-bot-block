@@ -1,7 +1,7 @@
 {
     "name": "marcvanh/laravel-bot-block",
     "description": "A Laravel package to add custom security middleware. Temporarily blocks crawlers scanning for vulnerabilities.",
-    "version": "1.0.3",
+    "version": "1.0.4",
     "authors": [
         {
             "name": "Marc Van Houwelingen",

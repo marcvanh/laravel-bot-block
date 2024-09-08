@@ -28,9 +28,6 @@ return [
         ],
     ],
     
-    // do not block logged-in sessions
-    'whitelist_users_logged_in' => true,
-    
     // any matches here will be considered a bot/probe and be blocked
     'block' => [
         'ip' => [

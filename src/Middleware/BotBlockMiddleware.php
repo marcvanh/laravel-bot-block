@@ -24,13 +24,6 @@ class BotBlockMiddleware
             return $next($request);
         }
         
-        // skip if logged in
-        if (config('laravel-bot-block.whitelist_users_logged_in', false)) {
-            if ($this->isLoggedInToAnyGuard()) {
-                return $next($request);
-            }
-        }
-        
         // skip if whitelist match
         if ($this->isMatch($request->decodedPath(), config('laravel-bot-block.whitelist.uri', []))) {
             return $next($request);
@@ -125,20 +118,6 @@ class BotBlockMiddleware
         // Check if the IP is valid and not in private or reserved ranges
         return filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE)
             !== false;
-    }
-
-    private function isLoggedInToAnyGuard(): bool
-    {
-        try {
-            foreach (array_keys(config('auth.guards', [])) as $guard) {
-                if (auth()->guard($guard)->check()) {
-                    return true;
-                }
-            }
-        } catch (\Throwable) {
-        }
-
-        return false;
     }
 
 }
