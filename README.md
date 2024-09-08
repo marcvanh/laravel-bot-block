@@ -1,8 +1,9 @@
 # Laravel Bot Block
 
-A Laravel package to add custom security middleware. It monitors incoming requests, looking for bot activity. 
-Any bot activity is blocked for a specified amount of time - 10 minutes by default. The end result is a pretty
-good defense against probing scripts and bots.
+A Laravel package to add custom security middleware. It monitors incoming requests, watching 
+for bots/crawlers scanning for vulnerabilities. Any bot activity and the crawler is blocked 
+for a specified amount of time (10 minutes by default). The end result is a pretty good 
+defense against probing scripts, crawlers and bots.
 
 Supports Cloudflare & other Proxies
 
@@ -17,5 +18,5 @@ Supports Cloudflare & other Proxies
 2. (Optional) Publish the configuration file (for customization):
 
     ```bash
-    php artisan vendor:publish --tag=config
+    php artisan vendor:publish --provider="Marcvanh\LaravelBotBlock\LaravelBotBlockServiceProvider"
     ```

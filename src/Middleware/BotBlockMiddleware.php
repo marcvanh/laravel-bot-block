@@ -24,6 +24,13 @@ class BotBlockMiddleware
             return $next($request);
         }
         
+        // skip if logged in
+        if (config('laravel-bot-block.whitelist_users_logged_in', false)) {
+            if ($this->isLoggedInToAnyGuard()) {
+                return $next($request);
+            }
+        }
+        
         // skip if whitelist match
         if ($this->isMatch($request->decodedPath(), config('laravel-bot-block.whitelist.uri', []))) {
             return $next($request);
@@ -99,14 +106,16 @@ class BotBlockMiddleware
             RateLimiter::hit(config('laravel-bot-block.cache_key').":{$ip}", $seconds);
             
             // log this
-            try {
-                logger()->info("Blocked IP {$ip} for {$seconds} seconds", [
-                    'request' => request()->all(),
-                    'url' => request()->fullUrl(),
-                    'user_ip_address' => $ip,
-                    'user_country' => $_SERVER['HTTP_CF_IPCOUNTRY'] ?? null,
-                ]);
-            } catch (\Throwable) {
+            if (config('laravel-bot-block.logging_enabled', true)) {
+                try {
+                    logger()->info("Blocked IP {$ip} for {$seconds} seconds", [
+                        'request' => request()->all(),
+                        'url' => request()->fullUrl(),
+                        'user_ip_address' => $ip,
+                        'user_country' => $_SERVER['HTTP_CF_IPCOUNTRY'] ?? null,
+                    ]);
+                } catch (\Throwable) {
+                }
             }
         }
     }
@@ -117,4 +126,19 @@ class BotBlockMiddleware
         return filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE)
             !== false;
     }
+
+    private function isLoggedInToAnyGuard(): bool
+    {
+        try {
+            foreach (array_keys(config('auth.guards', [])) as $guard) {
+                if (auth()->guard($guard)->check()) {
+                    return true;
+                }
+            }
+        } catch (\Throwable) {
+        }
+
+        return false;
+    }
+
 }

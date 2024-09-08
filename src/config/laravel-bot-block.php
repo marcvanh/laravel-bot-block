@@ -24,9 +24,12 @@ return [
             'exact' => [],
             'endswith' => [],
             'contains' => [],
-            'startswith' => ['horizon', 'wp-content/'],
+            'startswith' => ['horizon'],
         ],
     ],
+    
+    // do not block logged-in sessions
+    'whitelist_users_logged_in' => true,
     
     // any matches here will be considered a bot/probe and be blocked
     'block' => [
@@ -43,13 +46,14 @@ return [
                 ".cgi", ".cfm", ".cfc", ".dll", ".exe", ".sh", ".bat", ".cmd", ".ps1", ".jar",
                 ".war", ".class", ".lua", ".sql",
             ],
-            'contains' => ['xmlrpc', 'wp-admin', 'wp-login', "../"],
+            'contains' => ['xmlrpc', 'wp-admin', 'wp-login', 'wp-content', "../"],
             'startswith' => [],
         ],
     ],
     
     // other settings
     'block_seconds' => 10 * 60,
-    'cache_key' => 'ls-blocked-ip',
+    'cache_key' => 'bb-blocked-ip',
+    'logging_enabled' => true,
 
 ];
