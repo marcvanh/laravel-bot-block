@@ -17,7 +17,7 @@ class BotBlockMiddleware
         }
         
         // get client IP with cloudflare (or other proxy) support
-        $clientIp = $_SERVER["HTTP_CF_CONNECTING_IP"] ?? $_SERVER["HTTP_X_FORWARDED_FOR"] ?? $_SERVER['REMOTE_ADDR'];
+        $clientIp = $_SERVER["HTTP_CF_CONNECTING_IP"] ?? $_SERVER["HTTP_X_FORWARDED_FOR"] ?? $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1';
         
         // skip local & invalid IP addresses
         if (!$this->isValidPublicIp($clientIp)) {
