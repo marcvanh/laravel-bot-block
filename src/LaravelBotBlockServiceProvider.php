@@ -12,9 +12,10 @@ class LaravelBotBlockServiceProvider extends ServiceProvider
         $this->mergeConfigFrom(__DIR__.'/config/laravel-bot-block.php', 'laravel-bot-block');
     }
     
-    public function boot (Kernel $kernel)
+    public function boot ()
     {
         // Add the middleware to the global middleware stack
+        $kernel = $this->app[Kernel::class];
         $kernel->pushMiddleware(\Marcvanh\LaravelBotBlock\Middleware\BotBlockMiddleware::class);
         
         // Publish the config file

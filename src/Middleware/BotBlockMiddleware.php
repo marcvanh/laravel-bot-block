@@ -11,8 +11,11 @@ class BotBlockMiddleware
 {
     public function handle (Request $request, Closure $next)
     {
+        $dbg = config('laravel-bot-block.debug_mode', false);
+        
         // skip if disabled
         if (!config('laravel-bot-block.enable')) {
+            if ($dbg) logger()->info('BotBlockMiddleware disabled');
             return $next($request);
         }
         
@@ -21,19 +24,23 @@ class BotBlockMiddleware
         
         // skip local & invalid IP addresses
         if (!$this->isValidPublicIp($clientIp)) {
+            if ($dbg) logger()->info('BotBlockMiddleware skipped non-public IP address: '.$clientIp);
             return $next($request);
         }
         
         // skip if whitelist match
         if ($this->isMatch($request->decodedPath(), config('laravel-bot-block.whitelist.uri', []))) {
+            if ($dbg) logger()->info('BotBlockMiddleware skipped whitelisted URI: '.$request->decodedPath());
             return $next($request);
         }
         if ($this->isMatch($clientIp, config('laravel-bot-block.whitelist.ip', []))) {
+            if ($dbg) logger()->info('BotBlockMiddleware skipped whitelisted IP: '.$clientIp);
             return $next($request);
         }
         
         // check if this IP is currently blocked. if so, deny access to site
         if (RateLimiter::tooManyAttempts(config('laravel-bot-block.cache_key').":{$clientIp}", 1)) {
+            if ($dbg) logger()->info('BotBlockMiddleware rejecting previously blocked IP: '.$clientIp);
             abort(config('laravel-bot-block.response_code', 444));
         }
         
@@ -46,6 +53,7 @@ class BotBlockMiddleware
             $checkHost = strtolower($request->getHost());
             $domain = strtolower(config('laravel-bot-block.require_domain'));
             if ($checkHost !== $domain && !str_ends_with($checkHost, ".{$domain}")) {
+                if ($dbg) logger()->info('BotBlockMiddleware rejecting non-matching domain: '.$checkHost);
                 $this->blockIp($clientIp);
                 abort(config('laravel-bot-block.response_code', 444));
             }
@@ -53,14 +61,17 @@ class BotBlockMiddleware
         
         // test for probing for vulnerable paths in URL...
         if ($this->isMatch($request->decodedPath(), config('laravel-bot-block.block.uri', []))) {
+            if ($dbg) logger()->info('BotBlockMiddleware rejecting probing URI: '.$request->decodedPath());
             $this->blockIp($clientIp);
             abort(config('laravel-bot-block.response_code', 444));
         }
         if ($this->isMatch($clientIp, config('laravel-bot-block.block.ip', []))) {
+            if ($dbg) logger()->info('BotBlockMiddleware rejecting blacklisted IP: '.$clientIp);
             $this->blockIp($clientIp);
             abort(config('laravel-bot-block.response_code', 444));
         }
         
+        // if ($dbg) logger()->info('BotBlockMiddleware all good for IP: '.$clientIp);
         return $next($request);
     }
     
@@ -99,7 +110,7 @@ class BotBlockMiddleware
             RateLimiter::hit(config('laravel-bot-block.cache_key').":{$ip}", $seconds);
             
             // log this
-            if (config('laravel-bot-block.logging_enabled', true)) {
+            if (config('laravel-bot-block.logging_enabled', true) || config('laravel-bot-block.debug_mode', false)) {
                 try {
                     logger()->info("Blocked IP {$ip} for {$seconds} seconds", [
                         'request' => request()->all(),

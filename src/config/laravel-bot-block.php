@@ -3,10 +3,10 @@
 return [
     
     // enable or disable this package
-    'enable' => env('APP_ENV') === 'production',
+    'enable' => env('LARAVEL_BOT_BLOCK_ENABLE', env('APP_ENV') === 'production'),
     
     // response code when user blocked
-    'response_code' => 444,
+    'response_code' => env('LARAVEL_BOT_BLOCK_RESPONSE_CODE', 403),
     
     // for preventing access via direct IP (always ignored outside production)
     // ONLY the domain e.g. 'google.com' - no wildcards or leading dots
@@ -52,5 +52,6 @@ return [
     'block_seconds' => 10 * 60,
     'cache_key' => 'bb-blocked-ip',
     'logging_enabled' => true,
+    'debug_mode' => env('LARAVEL_BOT_BLOCK_DEBUG_MODE', false),
 
 ];
