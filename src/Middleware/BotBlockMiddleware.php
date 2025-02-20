@@ -101,7 +101,7 @@ class BotBlockMiddleware
         return false;
     }
     
-    private function blockIp (string $ip = null): void
+    private function blockIp (?string $ip = null): void
     {
         if (!empty($ip)) {
             $seconds = config('laravel-bot-block.block_seconds');
