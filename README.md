@@ -20,3 +20,8 @@ Supports Cloudflare & other Proxies
     ```bash
     php artisan vendor:publish --provider="Marcvanh\LaravelBotBlock\LaravelBotBlockServiceProvider"
     ```
+
+ideas:
+move "illuminate/support" to require-dev
+consider only "web" group for middleware:
+        // $kernel->pushMiddlewareToGroup('web', \Marcvanh\LaravelBotBlock\Middleware\BotBlockMiddleware::class);
